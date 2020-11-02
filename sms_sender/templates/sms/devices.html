@@ -1,0 +1,43 @@
+{%extends 'sms/base.html' %}
+{%block title%}{{user.username}}{%endblock%}
+{%block welcome%}{{user.username}}{%endblock%}
+{%block device%}w3-blue{%endblock%}
+{%block pagename%}Devices{%endblock%}
+{%block body%}
+<div class="w3-row">
+  <div class="w3-col m6 l6 w3-padding w3-center">
+    <h2 class="w3-green">device List</h2>
+    {%for d in device%}
+    <form method="post" action="" class="w3-padding">
+      {%csrf_token%}
+      <input type="hidden" name="id" value="{{d.id}}">
+      <button class="w3-hover-blue w3-button w3-white w3-card w3-center" type="submit" name="button" style="width:100%">{{d.model}}</button>
+    </form>
+    {%endfor%}
+  </div>
+  <div class="w3-col m6 l6 w3-padding w3-center">
+    <h2 class="w3-green">Active device</h2>
+    {%for a in active%}
+    <form method="post" action="" class="w3-padding">
+      {%csrf_token%}
+      <input type="hidden" name="id" value="{{a.id}}">
+      <button class="w3-hover-blue w3-button w3-white w3-card w3-center" type="submit" name="button" style="width:100%">{{a.model}}</button>
+    </form>
+    {%endfor%}
+  </div>
+</div>
+<script type="text/javascript">
+  setTimeout(function(){
+   window.location.reload(1);
+}, 30000);
+setTimeout(function(){
+  $.post("{%url 'sms:make_active'%}",
+   {
+     username: "{{user.username}}",
+     'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+   },
+   function(data, status){
+   });
+}, 15000);
+</script>
+{%endblock%}

@@ -1,0 +1,57 @@
+{%extends 'sms/base.html' %}
+{%block title%}{{user.username}}{%endblock%}
+{%block welcome%}{{user.username}}{%endblock%}
+{%block sms%}w3-blue{%endblock%}
+{%block pagename%}Sms{%endblock%}
+{%block body%}
+
+<div class="w3-card-4 w3-white w3-margin" style="width:100%">
+  {% if back == 'not' %}
+  <form method="post" action="">
+    {%csrf_token%}
+    <input type="hidden" name="form_name" value="date_not">
+    <input type="hidden" name="date_list" value="{{not_details.date}}">
+    <button class="w3-button w3-red w3-round" type="submit" name="button">back</button>
+  </form>
+  {% elif back == 'send' %}
+  <form method="post" action="">
+    {%csrf_token%}
+    <input type="hidden" name="form_name" value="date_send">
+    <input type="hidden" name="date_list" value="{{not_details.date}}">
+    <button class="w3-button w3-red w3-round" type="submit" name="button">back</button>
+  </form>
+  {% elif back == 'rec' %}
+  <form method="post" action="">
+    {%csrf_token%}
+    <input type="hidden" name="form_name" value="date_rec">
+    <input type="hidden" name="date_list" value="{{not_details.date}}">
+    <button class="w3-button w3-red w3-round" type="submit" name="button">back</button>
+  </form>
+  {%endif%}
+  <div class="w3-row">
+    <div class="w3-col">
+      {% if not_details.phone.name != None %}
+      <h1 class="w3-center w3-text-red">{{not_details.phone.name}}</h1>
+      {%else%}
+      <h1 class="w3-center w3-text-red">{{not_details.number}}</h1>
+      {%endif%}
+      <div class="w3-padding">
+        <h3>Number : <span class="w3-text-blue">{{not_details.number}}</span></h3>
+      </div>
+      <p class="w3-padding">Message :</p>
+      <div class="w3-row w3-section w3-container w3-padding-right">
+          <div class="w3-rest">
+            <textarea class="w3-input w3-border" name="message" rows="4" cols="50" placeholder="{{not_details.message}}" disabled></textarea>
+          </div>
+      </div>
+      <div class="w3-padding">
+        <h3>Status : <span class="w3-text-blue">{{not_details.sms_status}}</span></h3>
+      </div>
+      <div class="w3-padding">
+        <h3>date : <span class="w3-text-blue">{{not_details.date}}</span></h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+{%endblock%}

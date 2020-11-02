@@ -1,0 +1,27 @@
+{%extends 'sms/base.html' %}
+{%block title%}{{user.username}}{%endblock%}
+{%block welcome%}{{user.username}}{%endblock%}
+{%block device%}w3-blue{%endblock%}
+{%block pagename%}Devices{%endblock%}
+{%block body%}
+<a href="{%url 'sms:device'%}" class="w3-button w3-red w3-margin">Back</a>
+<div class="w3-card-4 w3-white w3-margin" style="width:75%">
+  <div class="w3-row">
+    <div class="w3-col">
+      <h1 class="w3-center w3-text-red">{{device.model}}</h1>
+      <div class="w3-padding">
+        <h3>Device brand : <span class="w3-text-blue">{{device.brand}}</span></h3>
+      </div>
+      <div class="w3-padding">
+        <h3>Device Model : <span class="w3-text-blue">{{device.model}}</span></h3>
+      </div>
+      <div class="w3-padding">
+        <h3>Device Id : <span class="w3-text-blue">{{device.id_phone}}</span></h3>
+      </div>
+      <div class="w3-padding">
+        <h3>Device Active : <span class="w3-text-blue">{{device.active}}</span></h3>
+      </div>
+    </div>
+  </div>
+</div>
+{%endblock%}

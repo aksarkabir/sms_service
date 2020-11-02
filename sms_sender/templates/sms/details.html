@@ -1,0 +1,62 @@
+{%extends 'sms/base.html' %}
+{%block title%}{{user.username}}{%endblock%}
+{%block welcome%}{{user.username}}{%endblock%}
+{%block index%}w3-blue{%endblock%}
+{%block pagename%}Dashboard{%endblock%}
+{%block body%}
+<form class="w3-container w3-margin" method="post" action="">
+  {%csrf_token%}
+  <input type="hidden" name="form_name" value="select_date">
+  <select class="w3-select w3-border" name="date_list" onchange="this.form.submit()">
+    <option value="{{current_date}}" selected>{{current_date}}</option>
+    {%for d in dates%}
+      {% if d.date != current_date %}
+      <option value="{{d.date}}">{{d.date}}</option>
+      {%endif%}
+    {%endfor%}
+  </select>
+</form>
+<br><br>
+<div class="w3-row-padding w3-margin-bottom">
+  <div class="w3-quarter">
+    <div class="w3-container w3-red w3-padding-16">
+      <div class="w3-left"><i class="fa fa-comment w3-xxxlarge"></i></div>
+      <div class="w3-right">
+        <h3>{{total_sms}}</h3>
+      </div>
+      <div class="w3-clear"></div>
+      <h4>Total Messages</h4>
+    </div>
+  </div>
+  <div class="w3-quarter">
+    <div class="w3-container w3-blue w3-padding-16">
+      <div class="w3-left"><i class="fa fa-comment w3-xxxlarge"></i></div>
+      <div class="w3-right">
+        <h3>{{send_sms}}</h3>
+      </div>
+      <div class="w3-clear"></div>
+      <h4>Send Message</h4>
+    </div>
+  </div>
+  <div class="w3-quarter">
+    <div class="w3-container w3-teal w3-padding-16">
+      <div class="w3-left"><i class="fa fa-comment w3-xxxlarge"></i></div>
+      <div class="w3-right">
+        <h3>{{not_send_sms}}</h3>
+      </div>
+      <div class="w3-clear"></div>
+      <h4>Not Send Message</h4>
+    </div>
+  </div>
+  <div class="w3-quarter">
+    <div class="w3-container w3-teal w3-padding-16">
+      <div class="w3-left"><i class="fa fa-comment w3-xxxlarge"></i></div>
+      <div class="w3-right">
+        <h3>{{received_sms}}</h3>
+      </div>
+      <div class="w3-clear"></div>
+      <h4>Received Message</h4>
+    </div>
+  </div>
+</div>
+{%endblock%}

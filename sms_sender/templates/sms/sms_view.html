@@ -1,0 +1,263 @@
+{%extends 'sms/base.html' %}
+{%block title%}{{user.username}}{%endblock%}
+{%block welcome%}{{user.username}}{%endblock%}
+{%block sms%}w3-blue{%endblock%}
+{%block pagename%}Sms{%endblock%}
+{%block body%}
+<div class="w3-bar w3-green w3-margin">
+  <form method="post" action="">
+    {%csrf_token%}
+    <input type="hidden" name="form_name" value="new">
+    <button type="submit" name="button" class="w3-bar-item w3-button w3-mobile {{active_new}}">New message</button>
+  </form>
+  <form method="post" action="">
+    {%csrf_token%}
+    <input type="hidden" name="form_name" value="send">
+    <button type="submit" name="button" class="w3-bar-item w3-button w3-mobile {{active_send}}">Send</button>
+  </form>
+  <form method="post" action="">
+    {%csrf_token%}
+    <input type="hidden" name="form_name" value="not">
+    <button type="submit" name="button" class="w3-bar-item w3-button w3-mobile {{active_not}}">Not Send</button>
+  </form>
+  <form method="post" action="">
+    {%csrf_token%}
+    <input type="hidden" name="form_name" value="received">
+    <button type="submit" name="button" class="w3-bar-item w3-button w3-mobile {{active_rec}}">Received Sms</button>
+  </form>
+</div>
+{% if active == 'new' %}
+<p id="name_num" class="w3-text-red w3-center"></p>
+<form action="" class="w3-container w3-card-4 w3-light-grey w3-text-blue w3-margin" method="post" autocomplete="off">
+  {%csrf_token%}
+  <input type="hidden" name="form_name" value="write">
+<div class="w3-col" style="width:50px"><i class="w3-xxlarge fa fa-phone"></i></div>
+<input id = "user_name" type="hidden" name="" value="{{user.username}}">
+<input id = "number_for" onclick="makeit()" type="text" name="number" value="" required onkeyup="showHint(this.value)"> <a href="{%url 'sms:phonebook' %}" class="w3-button">PhoneBook</a>
+<table id = "hint" class="w3-table-all w3-hoverabl" style = "display:none;">
+</table>
+
+<div class="w3-row w3-section">
+  <div class="w3-col" style="width:50px"><i class="w3-xxlarge fa fa-pencil"></i></div>
+    <div class="w3-rest">
+      <textarea class="w3-input w3-border" name="message" rows="4" cols="50" placeholder="Message"></textarea>
+    </div>
+</div>
+<button class="w3-button w3-block w3-section w3-blue w3-ripple w3-padding">Send</button>
+
+</form>
+{% elif active == 'not' %}
+<form class="w3-container" method="post" action="">
+  {%csrf_token%}
+  <input type="hidden" name="form_name" value="date_not">
+  <select class="w3-select w3-border" name="date_list" onchange="this.form.submit()">
+    <option value="{{current_date}}" selected>{{current_date}}</option>
+    {%for d in dates%}
+    {% if d.date != current_date %}
+    <option value="{{d.date}}">{{d.date}}</option>
+    {%endif%}
+    {%endfor%}
+  </select>
+</form>
+<br>
+{% for n in not_send %}
+<div class="w3-container">
+  <div class="w3-card">
+      <!-- deleteing the sms..i am posting sms id to the same view to delete it -->
+    <form method="post" action="">
+      {%csrf_token%}
+      <input type="hidden" name="form_name" value="sms_delete">
+      <input type="hidden" name="sms_id" value="{{n.id}}">
+      <input type="hidden" name="back" value="not">
+      <button class="w3-button w3-red" type="submit" name="button"> <i class="fa fa-trash"></i> </button>
+    </form>
+    <form  method="post" action="">
+      {%csrf_token%}
+      <input type="hidden" name="form_name" value="sms_details">
+      <input type="hidden" name="sms_id" value="{{n.id}}">
+      <input type="hidden" name="back" value="not">
+      <button class="w3-button w3-white w3-margin w3-card-4" type="submit" name="button" style="width:40%">
+        <div class="" style="">
+
+          {% if n.phone.name != None %}
+          <h4 class="w3-text-green">{{n.phone.name}}</h4>
+          {% else %}
+          <h4 class="w3-text-green">{{n.number}}</h4>
+          {%endif%}
+          <div class="w3-container w3-center">
+            <p class="">{{n.message}}</p>
+          </div>
+
+        </div>
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
+<br><br>
+
+{%endfor%}
+{% elif active == 'send' %}
+<form class="w3-container" method="post" action="">
+  {%csrf_token%}
+  <input type="hidden" name="form_name" value="date_send">
+  <select class="w3-select w3-border" name="date_list" onchange="this.form.submit()">
+    <option value="{{current_date}}" selected>{{current_date}}</option>
+    {%for d in dates%}
+    {% if d.date != current_date %}
+    <option value="{{d.date}}">{{d.date}}</option>
+    {%endif%}
+    {%endfor%}
+  </select>
+</form>
+<br>
+{% for n in send %}
+<div class="w3-container">
+  <div class="w3-card">
+    <form method="post" action="">
+      {%csrf_token%}
+      <input type="hidden" name="form_name" value="sms_delete">
+      <input type="hidden" name="sms_id" value="{{n.id}}">
+      <input type="hidden" name="back" value="send">
+      <button class="w3-button w3-red" type="submit" name="button"> <i class="fa fa-trash"></i> </button>
+    </form>
+    <form method="post" action="">
+      {%csrf_token%}
+      <input type="hidden" name="form_name" value="sms_details">
+      <input type="hidden" name="sms_id" value="{{n.id}}">
+      <input type="hidden" name="back" value="send">
+      <button class="w3-button w3-white w3-margin w3-card-4" type="submit" name="button" style="width:40%">
+        <div class="" style="">
+
+          {% if n.phone.name != None %}
+          <h4 class="w3-text-green">{{n.phone.name}}</h4>
+          {% else %}
+          <h4 class="w3-text-green">{{n.number}}</h4>
+          {%endif%}
+          <div class="w3-container">
+            <p>{{n.message}}</p>
+          </div>
+
+        </div>
+      </button>
+    </form>
+  </div>
+</div>
+<br><br>
+{%endfor%}
+
+{% elif active == 'rec' %}
+<form class="w3-container" method="post" action="">
+  {%csrf_token%}
+  <input type="hidden" name="form_name" value="date_rec">
+  <select class="w3-select w3-border" name="date_list" onchange="this.form.submit()">
+    <option value="{{current_date}}" selected>{{current_date}}</option>
+    {%for d in dates%}
+    {% if d.date != current_date %}
+    <option value="{{d.date}}">{{d.date}}</option>
+    {%endif%}
+    {%endfor%}
+  </select>
+</form>
+<br>
+{% for n in rec %}
+<div class="w3-container">
+  <div class="w3-card">
+    <div class="w3-bar w3-white">
+      <form class="w3-bar-item" method="post" action="">
+        {%csrf_token%}
+        <input type="hidden" name="form_name" value="sms_delete">
+        <input type="hidden" name="sms_id" value="{{n.id}}">
+        <input type="hidden" name="back" value="rec">
+        <button class="w3-button w3-red" type="submit" name="button"> <i class="fa fa-trash"></i> </button>
+      </form>
+      <form class="w3-bar-item">
+        <button class="w3-button w3-red" type="button" name="button">Reply</button>
+      </form>
+
+    </div>
+    <form method="post" action="">
+      {%csrf_token%}
+      <input type="hidden" name="form_name" value="sms_details">
+      <input type="hidden" name="sms_id" value="{{n.id}}">
+      <input type="hidden" name="back" value="rec">
+      <button class="w3-button w3-white w3-margin w3-card-4" type="submit" name="button" style="width:40%">
+        <div class="" style="">
+
+          {% if n.phone.name != None %}
+          <h4 class="w3-text-green">{{n.phone.name}}</h4>
+          {% else %}
+          <h4 class="w3-text-green">{{n.number}}</h4>
+          {%endif%}
+          <div class="w3-container">
+            <p>{{n.message}}</p>
+          </div>
+
+        </div>
+      </button>
+    </form>
+  </div>
+</div>
+<br><br>
+{%endfor%}
+
+{%endif%}
+
+<script type="text/javascript">
+  function showHint(nm){
+    $('#name_num').text("");
+    if($('#number_for').val()!=""){
+      $("#hint").empty();
+      us = "{{user.username}}";
+      $.post("{%url 'sms:get_suggetion'%}",
+      {
+        str: nm,
+        username: us,
+        'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+      },
+      function(data,status){
+        ob = JSON.stringify(data);
+        obj = JSON.parse(ob);
+        for(z=0;z<obj.length;z++){
+          tt = $('<tr></tr>');
+          dd2 = '<td onclick="hi(this)">'+''+obj[z]['name']+'='+' '+obj[z]['number']+'</td>'
+          tt = tt.append(dd2);
+          $('#hint').append(tt);
+        }
+      });
+
+    }else{
+      $("#hint").empty();
+    }
+  }
+
+  function hi(a){
+    ss = a.innerHTML;
+    str = "";
+    str2="";
+    b=0;
+    for(z=0;z<ss.length;z++){
+      if(b==1){
+        str+=ss[z];
+      }else{
+        str2+=ss[z];
+      }
+      if(ss[z]=="="){
+        b=1;
+      }
+    }
+    str = str.trim();
+    str2=str2.replace("=","");
+    $("#number_for").val(str);
+    $("#hint").empty();
+    $("#name_num").text(str2);
+
+  }
+
+  function makeit(){
+    document.getElementById('hint').style.display='block';
+  }
+</script>
+{%endblock%}

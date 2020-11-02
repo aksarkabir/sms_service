@@ -1,0 +1,22 @@
+{%extends 'sms/base.html' %}
+{%block title%}{{user.username}}{%endblock%}
+{%block welcome%}{{user.username}}{%endblock%}
+{%block phonebook%}w3-blue{%endblock%}
+{%block pagename%}Delete phonebook{%endblock%}
+{%block body%}
+<div class="w3-card-4 w3-margin" style="width:70%">
+    <header class="w3-container w3-light-grey">
+      <h3>{{phonebook.phonebook_name}}</h3>
+    </header>
+    <div class="w3-container">
+      <hr>
+      <p class="w3-text-red">Are You Sure You want to delete this phonebook?</p><br>
+    </div>
+    <form method="post">
+      {%csrf_token%}
+      <input type="hidden" name="id" value="{{phonebook.id}}">
+      <button class="w3-button w3-block w3-dark-grey"><i class="fa fa-trash"></i> Delete</button>
+    </form>
+</div>
+
+{%endblock%}

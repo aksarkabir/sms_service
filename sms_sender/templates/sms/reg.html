@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<title>W3.CSS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+{%load crispy_forms_tags%}
+<body>
+  <h1 class="w3-center">Sms Service</h1>
+
+  <div class="w3-bar w3-grey">
+    <a href="{%url 'sms:index'%}" class="w3-bar-item w3-button w3-hover-blue">Login page</a>
+  </div>
+<div class="w3-container">
+  <br><br>
+  <form method="post" class="w3-container w3-card-4 w3-light-grey w3-text-blue w3-margin">
+  <h2 class="w3-center">Login Please</h2>
+  {%csrf_token%}
+  {{form|crispy}}
+  <button class="w3-button w3-block w3-section w3-blue w3-ripple w3-padding">register</button>
+  </form>
+</div>
+
+</body>
+</html>

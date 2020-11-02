@@ -1,0 +1,165 @@
+{%extends 'sms/base.html'%}
+{%block title%}{{user.username}}{%endblock%}
+{%block welcome%}{{user.username}}{%endblock%}
+{%block phonebook%}w3-blue{%endblock%}
+{%block pagename%}PhoneBook{%endblock%}
+{%block body%}
+<h1 class="w3-center w3-white">Phonebook name</h1>
+<div class="w3-row" atyle = "height:700px">
+  <div class="w3-col m3 w3-center">
+    <button type="" name="button" class="w3-button w3-green" style="width:90%" onclick="document.getElementById('phonebook_add').style.display='block'">PhoneBook +</button>
+    {%for pb in phonebook%}
+    <form action="" method="post">
+      {%csrf_token%}
+      <input type="hidden" name="fn" value="shihab">
+      <input type="hidden" name="phonebook_name" value="{{pb.id}}">
+      {% if pb.id == p_name %}
+      <input style="width:78%" class="w3-button w3-blue w3-hover-blue" type="submit" name="" value="{{pb.phonebook_name}}"><a style="width:10%" class="w3-button w3-border w3-border-blue w3-round-large"href="{%url 'sms:delete_phonebook' pb.id%}"><i class="fa fa-trash"></i></a>
+      {% else %}
+      <input style="width:78%" class="w3-button w3-white w3-hover-grey" type="submit" name="" value="{{pb.phonebook_name}}"><a style="width:10%" class="w3-button w3-border w3-border-blue w3-round-large"href="{%url 'sms:delete_phonebook' pb.id%}"><i class="fa fa-trash"></i></a>
+      {%endif%}
+    </form>
+    {%endfor%}
+  </div>
+  {%if phonebook_name != ''%}
+  <div class="w3-col m6 w3-center">
+    <button type="" name="button" class="w3-button w3-green" style="width:100%" onclick="document.getElementById('number_add').style.display='block'" >Number +</button>
+    <table class="w3-table-all">
+    {%for n in number%}
+    <tr>
+      <td>{{n.name}}</td>
+      <td>{{n.number}}</td>
+      <td>
+        <a class="w3-button w3-border w3-border-blue w3-round-large " href="{%url 'sms:delete_number' n.id %}"><i class="fa fa-trash"></i></a>
+      </td>
+      <td>
+        <form method="post" action="{%url 'sms:write_sms'%}">
+          {%csrf_token%}
+          <input type="hidden" name="group_or_not" value="no">
+          <input type="hidden" name="phone" value="{{n.id}}">
+          <input type="hidden" name="fn" value="">
+          <button style="width:100%" class="w3-button w3-border w3-border-blue w3-round-large" type="submit" name="button">sms</button>
+        </form>
+      </td>
+    </tr>
+    {%endfor%}
+    </table>
+  </div>
+  <div class="w3-col m3 w3-center">
+    <button type="" name="button" class="w3-button w3-green" style="width:90%" onclick="document.getElementById('group_add').style.display='block'">Group +</button>
+    <table class="w3-table">
+    {%for g in group.group_name_set.all %}
+      <tr>
+        <td>
+          <a style = "width:100%"  class="w3-button w3-hover-grey w3-white " href="{%url 'sms:group' g.id %}">{{g.name}}</a>
+        </td>
+        <td>
+          <form method="post" action="">
+            {%csrf_token%}
+            <input type="hidden" name="fn" value="delete_group_name">
+            <input type="hidden" name="group_id" value="{{g.id}}">
+            <button type="submit" class="w3-button w3-border w3-border-blue w3-round-large"> <i class="fa fa-trash"></i> </button>
+          </form>
+        </td>
+      </tr>
+    {%endfor%}
+  </table>
+  </div>
+</div>
+{%endif%}
+<!-- model for phonebook add -->
+<div id="phonebook_add" class="w3-modal">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+
+      <div class="w3-center"><br>
+        <span onclick="document.getElementById('phonebook_add').style.display='none'" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+      </div>
+
+      <form class="w3-container" action="{%url 'sms:phonebookname'%}" method="post">
+        {%csrf_token%}
+        <div class="w3-section">
+          <h4 class="w3-center w3-text-red">{{user.username}}</h4>
+          <label><b>PhoneBook</b></label>
+          <input class="w3-input w3-border" type="text" placeholder="Enter PhoneBook Name" name="phonebook_name" required>
+          <button class="w3-button w3-block w3-green w3-section w3-padding" type="submit">save</button>
+        </div>
+      </form>
+
+      <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+        <button onclick="document.getElementById('phonebook_add').style.display='none'" type="button" class="w3-button w3-red">Cancel</button>
+      </div>
+
+    </div>
+</div>
+
+
+<!-- model for add number -->
+<div id="number_add" class="w3-modal">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+
+      <div class="w3-center"><br>
+        <span onclick="document.getElementById('number_add').style.display='none'" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+      </div>
+
+      <form class="w3-container" action="{%url 'sms:savenumber'%}" method="post">
+        {%csrf_token%}
+        <div class="w3-section">
+          <h4 class="w3-center w3-text-red">{{phonebook_name}}</h4>
+          <input type="hidden" name="phonebook" value="{{p_name}}">
+          <label><b>Name</b></label>
+          <input class="w3-input w3-border w3-margin-bottom" type="text" placeholder="enter name" name="name_number" required>
+          <label><b>Number</b></label>
+          <input class="w3-input w3-border" type="text" placeholder="enter Number" name="number" required>
+          <button class="w3-button w3-block w3-green w3-section w3-padding" type="submit">save</button>
+        </div>
+      </form>
+
+      <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+        <button onclick="document.getElementById('number_add').style.display='none'" type="button" class="w3-button w3-red">Cancel</button>
+      </div>
+
+    </div>
+</div>
+
+<!-- modal for add group -->
+
+<div id="group_add" class="w3-modal">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+
+      <div class="w3-center"><br>
+        <span onclick="document.getElementById('group_add').style.display='none'" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+      </div>
+
+      <form class="w3-container" action="{%url 'sms:save_group'%}" method="post">
+        {%csrf_token%}
+        <div class="w3-section">
+          <h4 class="w3-center w3-text-red">{{phonebook_name}}</h4>
+          <input class="w3-input w3-border w3-margin-bottom" type="hidden" placeholder="phonebook" name="phonebook" value="{{p_name}}" required>
+          <label><b>name</b></label>
+          <input class="w3-input w3-border" type="text" placeholder="group Name" name="name" required>
+          <button class="w3-button w3-block w3-green w3-section w3-padding" type="submit">save</button>
+        </div>
+      </form>
+
+      <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+        <button onclick="document.getElementById('group_add').style.display='none'" type="button" class="w3-button w3-red">Cancel</button>
+      </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+  var modal = document.getElementById('phonebook_add');
+  var modal2 = document.getElementById('number_add');
+  var modal3 = document.getElementById('group_add');
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal || event.target == modal2 || event.target ==modal3) {
+    modal.style.display = "none";
+    modal2.style.display = "none";
+    modal3.style.display = "none";
+  }
+}
+
+</script>
+{%endblock%}

@@ -1,0 +1,146 @@
+{%extends 'sms/base.html' %}
+{%block title%}{{user.username}}{%endblock%}
+{%block welcome%}{{user.username}}{%endblock%}
+{%block phonebook%}w3-blue{%endblock%}
+{%block pagename%}Group view{%endblock%}
+{%block body%}
+<a href="{%url 'sms:phonebook'%}" class="w3-button w3-margin w3-red">Back</a>
+<div class="w3-panel w3-center w3-light-grey">
+  <h4 class="w3-xlarge w3-serif">
+  <i class="w3-text-blue">{{group.name}}</i></h4>
+  <p class="w3-text-grey">{{group.phonebook.phonebook_name}}</p>
+</div>
+<button style = "width:100%"class="w3-button w3-blue" type="button" name="button" onclick="document.getElementById('number_add').style.display='block'">add new</button>
+<div class="w3-container" >
+  <br>
+  <form method="post" action="{%url 'sms:write_sms'%}">
+    {%csrf_token%}
+    <input type="hidden" name="group_or_not" value="yes">
+    <input type="hidden" name="group_id" value="{{group.id}}">
+    {% if group.phone_book_set.all|length != 0 %}
+    <button class="w3-button w3-border w3-border-blue w3-round-large">send</button><br><br>
+    {%endif%}
+  </form>
+  <p id="name_num" class="w3-text-red w3-center"></p>
+  <form method="post" action="{%url 'sms:add_group'%}">
+    {%csrf_token%}
+    <div class="w3-row-padding">
+      <div class="w3-third">
+        <input type="hidden" name="form_name" value="no_model">
+        <input id= "group_id" type="hidden" name="group" value="{{group.id}}">
+        <input type="hidden" name="id" value="" id="phonebook_id">
+        <input autocomplete="off" id="number_for" class="w3-input w3-border" type="text" placeholder="search" onclick="document.getElementById('search_table').style.display='block'" required onkeyup="showHint(this.value)">
+      </div>
+      <div class="w3-third">
+        <button id="bb1" class="w3-button w3-border w3-border-blue w3-round-large" type="submit" name="button" disabled>add</button>
+      </div>
+    </div>
+  </form>
+  <table class="w3-table-all w3-margin" id = "search_table" style="display:none;">
+  </table>
+  <br>
+  <table class="w3-table-all">
+    <tr>
+      <th>First Name</th>
+      <th>Last Name</th>
+    </tr>
+    {%for g in group.phone_book_set.all %}
+    <tr>
+      <td>{{g.name}}</td>
+      <td>{{g.number}}</td>
+      <td>
+        <form action="{%url 'sms:delete_group'%}" method="post">
+          {%csrf_token%}
+          <input type="hidden" name="id" value="{{g.id}}">
+          <input type="hidden" name="group" value="{{group.id}}">
+          <button class="w3-button w3-border w3-border-blue w3-round-large" type="submit" name="button"><i class="fa fa-trash"></i></button>
+        </form>
+      </td>
+    </tr>
+    {%endfor%}
+  </table>
+
+</div>
+
+<!-- modal for add number in group -->
+<div id="number_add" class="w3-modal" style="display:{{m}}">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+
+      <div class="w3-center"><br>
+        <span onclick="document.getElementById('number_add').style.display='none'" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+      </div>
+        {%for n in number%}
+        <form action="{%url 'sms:add_group'%}" method="post">
+          {%csrf_token%}
+          <input type="hidden" name="form_name" value="model">
+          <input type="hidden" name="id" value="{{n.id}}">
+          <input type="hidden" name="group" value="{{group.id}}">
+          <button class="w3-button w3-white w3-border w3-border-red w3-round-large" type="submit" name="button">{{n.name}} {{n.number}}</button>
+        </form><br>
+        {%endfor%}
+      <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+        <button onclick="document.getElementById('number_add').style.display='none'" type="button" class="w3-button w3-red">Cancel</button>
+      </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+  var modal2 = document.getElementById('number_add');
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal2) {
+    modal2.style.display = "none";
+  }
+}
+function showHint(a){
+  document.getElementById("bb1").disabled = true;
+  $("#name_num").text("");
+  if($('#number_for').val()!=""){
+    $("#search_table").empty();
+    $.post("{%url 'sms:get_group_search'%}",
+    {
+      group_id: $('#group_id').val(),
+      str: a,
+      'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+    },
+    function(data, status){
+      ob = JSON.stringify(data);
+      obj = JSON.parse(ob);
+      for(z=0;z<obj.length;z++){
+        tt = $('<tr></tr>');
+        dd2 = '<td onclick="hi(this)">'+''+obj[z]['name']+'='+' '+obj[z]['number']+' id:'+obj[z]['id']+'</td>'
+        tt = tt.append(dd2);
+        $('#search_table').append(tt);
+      }
+    });
+
+  }else {
+    $("#search_table").empty();
+  }
+}
+function hi(a){
+  ss = a.innerHTML;
+  str = "";
+  str2="";
+  b=0;
+  for(z=0;z<ss.length;z++){
+    if(b==1){
+      str+=ss[z];
+    }else if(b==0){
+      str2+=ss[z];
+    }
+    if(ss[z]=="="){
+      b=1;
+    }
+  }
+  str = str.trim();
+  arr = str.split("id:");
+  str2=str2.replace("=","");
+  $("#number_for").val(arr[0].trim());
+  $("#search_table").empty();
+  $("#name_num").text(str2);
+  $("#phonebook_id").val(arr[1].trim());
+  document.getElementById("bb1").disabled = false;
+}
+</script>
+{%endblock%}
